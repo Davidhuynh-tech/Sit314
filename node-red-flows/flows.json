@@ -1,0 +1,139 @@
+[
+  {
+    "id": "tab-demand-forecasting",
+    "type": "tab",
+    "label": "Demand Forecasting - Ingestion & Processing",
+    "disabled": false,
+    "info": "Week 3 deliverable: MQTT ingestion, normalisation, noise filtering and threshold-based low-stock alerting, partitioned by store_id per the Task 1 breaking-point analysis (Section 2.3 - single Node-RED instance bottleneck)."
+  },
+  {
+    "id": "mqtt-broker-local",
+    "type": "mqtt-broker",
+    "name": "Local / AWS IoT Core (dev)",
+    "broker": "localhost",
+    "port": "1883",
+    "clientid": "",
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true
+  },
+  {
+    "id": "mqtt-in-shelf",
+    "type": "mqtt in",
+    "z": "tab-demand-forecasting",
+    "name": "Shelf sensor readings",
+    "topic": "stores/+/sensors/shelf",
+    "qos": "1",
+    "datatype": "json",
+    "broker": "mqtt-broker-local",
+    "x": 160,
+    "y": 100,
+    "wires": [["fn-normalise-shelf"]]
+  },
+  {
+    "id": "mqtt-in-pos",
+    "type": "mqtt in",
+    "z": "tab-demand-forecasting",
+    "name": "POS transactions",
+    "topic": "stores/+/pos/transactions",
+    "qos": "1",
+    "datatype": "json",
+    "broker": "mqtt-broker-local",
+    "x": 160,
+    "y": 220,
+    "wires": [["fn-normalise-pos"]]
+  },
+  {
+    "id": "fn-normalise-shelf",
+    "type": "function",
+    "z": "tab-demand-forecasting",
+    "name": "Normalise + filter noise",
+    "func": "// Validate payload shape and drop obviously noisy/duplicate readings.\nconst p = msg.payload;\nif (!p || !p.store_id || !p.sku_id || typeof p.quantity !== 'number') {\n    node.warn('Dropped malformed shelf reading');\n    return null;\n}\n\n// Simple noise filter: ignore negative or implausibly large jumps\n// (a real implementation would compare against the last known value\n// held in flow/context storage - stubbed here for Week 3).\nif (p.quantity < 0 || p.quantity > 100000) {\n    node.warn(`Dropped implausible reading for ${p.store_id}#${p.sku_id}`);\n    return null;\n}\n\nmsg.payload = {\n    store_id: p.store_id,\n    sku_id: p.sku_id,\n    quantity: p.quantity,\n    source: 'shelf_sensor',\n    normalised_at: new Date().toISOString()\n};\n// partition_key lets downstream nodes / the event bus route by store\n// without inspecting the full payload, matching the store_id#sku_id\n// partitioning strategy used for DynamoDB.\nmsg.partition_key = `${p.store_id}#${p.sku_id}`;\nreturn msg;",
+    "outputs": 1,
+    "x": 420,
+    "y": 100,
+    "wires": [["fn-threshold-check"]]
+  },
+  {
+    "id": "fn-normalise-pos",
+    "type": "function",
+    "z": "tab-demand-forecasting",
+    "name": "Normalise POS event",
+    "func": "const p = msg.payload;\nif (!p || !p.store_id || !p.sku_id || typeof p.quantity_sold !== 'number') {\n    node.warn('Dropped malformed POS event');\n    return null;\n}\n\nmsg.payload = {\n    store_id: p.store_id,\n    sku_id: p.sku_id,\n    quantity_sold: p.quantity_sold,\n    unit_price: p.unit_price,\n    promo_active: !!p.promo_active,\n    source: 'pos',\n    normalised_at: new Date().toISOString()\n};\nmsg.partition_key = `${p.store_id}#${p.sku_id}`;\nreturn msg;",
+    "outputs": 1,
+    "x": 420,
+    "y": 220,
+    "wires": [["debug-pos-out"]]
+  },
+  {
+    "id": "fn-threshold-check",
+    "type": "function",
+    "z": "tab-demand-forecasting",
+    "name": "Low-stock threshold alert",
+    "func": "// Placeholder threshold - Week 4+ will read the real reorder\n// threshold from DynamoDB (StockLevels table) instead of a constant.\nconst LOW_STOCK_THRESHOLD = 15;\n\nmsg.low_stock = msg.payload.quantity < LOW_STOCK_THRESHOLD;\nreturn msg;",
+    "outputs": 1,
+    "x": 680,
+    "y": 100,
+    "wires": [["switch-low-stock"]]
+  },
+  {
+    "id": "switch-low-stock",
+    "type": "switch",
+    "z": "tab-demand-forecasting",
+    "name": "Route: low stock?",
+    "property": "low_stock",
+    "propertyType": "msg",
+    "rules": [
+      { "t": "true" },
+      { "t": "false" }
+    ],
+    "checkall": "true",
+    "outputs": 2,
+    "x": 920,
+    "y": 100,
+    "wires": [["debug-low-stock-alert"], ["debug-normal-shelf"]]
+  },
+  {
+    "id": "debug-low-stock-alert",
+    "type": "debug",
+    "z": "tab-demand-forecasting",
+    "name": "LOW STOCK ALERT",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 1160,
+    "y": 70,
+    "wires": []
+  },
+  {
+    "id": "debug-normal-shelf",
+    "type": "debug",
+    "z": "tab-demand-forecasting",
+    "name": "Normal shelf reading (-> event buffer, Week 5)",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 1220,
+    "y": 130,
+    "wires": []
+  },
+  {
+    "id": "debug-pos-out",
+    "type": "debug",
+    "z": "tab-demand-forecasting",
+    "name": "Normalised POS event (-> event buffer, Week 5)",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 700,
+    "y": 220,
+    "wires": []
+  }
+]

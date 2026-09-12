@@ -1,0 +1,20 @@
+{
+  "name": "sit314-demand-forecasting",
+  "version": "0.1.0",
+  "description": "SIT314 Distinction Project - Demand Forecasting & Auto-Replenishment for Supermarket Stock Management (simulators + Node-RED flows)",
+  "main": "index.js",
+  "scripts": {
+    "device:sensor": "node devices/micro-sensor/sensor.js",
+    "device:sensor:dry": "node devices/micro-sensor/sensor.js --dry-run",
+    "device:card-reader": "node devices/card-reader/card_reader.js",
+    "device:card-reader:dry": "node devices/card-reader/card_reader.js --dry-run",
+    "device:controller": "node devices/controller/controller.js",
+    "device:controller:demo": "node devices/controller/controller.js --demo"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "mqtt": "^5.10.0"
+  },
+  "author": "Gia Kiet Huynh (David)",
+  "license": "MIT"
+}
