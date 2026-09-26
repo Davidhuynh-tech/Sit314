@@ -1,0 +1,128 @@
+{
+  "generatedAt": "2026-09-26T04:47:05.784Z",
+  "policy": {
+    "edgeDeadband": 5,
+    "reorderThreshold": 15,
+    "admissionSoftLimit": 500,
+    "protectedClass": "pos"
+  },
+  "runs": [
+    {
+      "baseline": {
+        "label": "baseline",
+        "stores": 5,
+        "offered": 1300,
+        "shelfOffered": 1000,
+        "posOffered": 300,
+        "cloudMessages": 1300,
+        "shelfRelayed": 1000,
+        "shelfSuppressed": 0,
+        "shelfShed": 0,
+        "posRejected": 0,
+        "orders": 50,
+        "forecasts": 50,
+        "drainMs": 24,
+        "elapsedMs": 26,
+        "peakIngress": 1300,
+        "peakQueue": 300
+      },
+      "treatment": {
+        "label": "edge-admission",
+        "stores": 5,
+        "offered": 1300,
+        "shelfOffered": 1000,
+        "posOffered": 300,
+        "cloudMessages": 500,
+        "shelfRelayed": 200,
+        "shelfSuppressed": 800,
+        "shelfShed": 0,
+        "posRejected": 0,
+        "orders": 50,
+        "forecasts": 50,
+        "drainMs": 28,
+        "elapsedMs": 31,
+        "peakIngress": 500,
+        "peakQueue": 300
+      },
+      "messageReductionPct": 61.5
+    },
+    {
+      "baseline": {
+        "label": "baseline",
+        "stores": 20,
+        "offered": 5200,
+        "shelfOffered": 4000,
+        "posOffered": 1200,
+        "cloudMessages": 5200,
+        "shelfRelayed": 4000,
+        "shelfSuppressed": 0,
+        "shelfShed": 0,
+        "posRejected": 0,
+        "orders": 200,
+        "forecasts": 200,
+        "drainMs": 44,
+        "elapsedMs": 49,
+        "peakIngress": 5200,
+        "peakQueue": 1200
+      },
+      "treatment": {
+        "label": "edge-admission",
+        "stores": 20,
+        "offered": 5200,
+        "shelfOffered": 4000,
+        "posOffered": 1200,
+        "cloudMessages": 1700,
+        "shelfRelayed": 800,
+        "shelfSuppressed": 3200,
+        "shelfShed": 300,
+        "posRejected": 0,
+        "orders": 200,
+        "forecasts": 200,
+        "drainMs": 43,
+        "elapsedMs": 48,
+        "peakIngress": 1700,
+        "peakQueue": 1200
+      },
+      "messageReductionPct": 67.3
+    },
+    {
+      "baseline": {
+        "label": "baseline",
+        "stores": 50,
+        "offered": 13000,
+        "shelfOffered": 10000,
+        "posOffered": 3000,
+        "cloudMessages": 13000,
+        "shelfRelayed": 10000,
+        "shelfSuppressed": 0,
+        "shelfShed": 0,
+        "posRejected": 0,
+        "orders": 500,
+        "forecasts": 500,
+        "drainMs": 166,
+        "elapsedMs": 173,
+        "peakIngress": 13000,
+        "peakQueue": 3000
+      },
+      "treatment": {
+        "label": "edge-admission",
+        "stores": 50,
+        "offered": 13000,
+        "shelfOffered": 10000,
+        "posOffered": 3000,
+        "cloudMessages": 3500,
+        "shelfRelayed": 2000,
+        "shelfSuppressed": 8000,
+        "shelfShed": 1500,
+        "posRejected": 0,
+        "orders": 500,
+        "forecasts": 500,
+        "drainMs": 271,
+        "elapsedMs": 284,
+        "peakIngress": 3500,
+        "peakQueue": 3000
+      },
+      "messageReductionPct": 73.1
+    }
+  ]
+}

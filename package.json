@@ -12,6 +12,7 @@
     "device:controller:demo": "node devices/controller/controller.js --demo",
     "test": "node microservices/forecasting-service/test/run-local.js && node microservices/replenishment-decision-service/test/run-local.js && node microservices/order-dispatch-service/test/run-local.js && node microservices/run-pipeline-demo.js && node microservices/test/run-queue-pipeline.js && node microservices/test/run-file-store.js",
     "test:load": "node scripts/load-test.js",
+    "test:hd": "node scripts/hd-experiment.js",
     "pipeline:serve": "node microservices/ingest-server.js"
   },
   "dependencies": {

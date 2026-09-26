@@ -1,0 +1,166 @@
+{
+  "topicFilter": "stores/store_1/pos/transactions",
+  "qos": 0,
+  "messages": [
+    {
+      "format": "json",
+      "topic": "stores/store_1/pos/transactions",
+      "timestamp": 1790407914729,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_8",
+        "quantity_sold": 2,
+        "unit_price": 1.91,
+        "promo_active": true,
+        "timestamp": "2026-09-26T07:31:53.827Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:31:54.335Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/pos/transactions",
+      "timestamp": 1790407914005,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_5",
+        "quantity_sold": 1,
+        "unit_price": 5.84,
+        "promo_active": true,
+        "timestamp": "2026-09-26T07:31:53.300Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:31:53.742Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/pos/transactions",
+      "timestamp": 1790407913757,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_6",
+        "quantity_sold": 2,
+        "unit_price": 2.56,
+        "promo_active": true,
+        "timestamp": "2026-09-26T07:31:52.816Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:31:53.196Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/pos/transactions",
+      "timestamp": 1790407913204,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_10",
+        "quantity_sold": 1,
+        "unit_price": 4.49,
+        "promo_active": true,
+        "timestamp": "2026-09-26T07:31:52.504Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:31:52.937Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/pos/transactions",
+      "timestamp": 1790407912682,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_3",
+        "quantity_sold": 3,
+        "unit_price": 5.28,
+        "promo_active": true,
+        "timestamp": "2026-09-26T07:31:52.022Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:31:52.412Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/pos/transactions",
+      "timestamp": 1790407912429,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_9",
+        "quantity_sold": 2,
+        "unit_price": 4.7,
+        "promo_active": true,
+        "timestamp": "2026-09-26T07:31:51.615Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:31:51.898Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/pos/transactions",
+      "timestamp": 1790407912138,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_1",
+        "quantity_sold": 1,
+        "unit_price": 4.53,
+        "promo_active": true,
+        "timestamp": "2026-09-26T07:31:51.305Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:31:51.639Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/pos/transactions",
+      "timestamp": 1790407911643,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_8",
+        "quantity_sold": 1,
+        "unit_price": 4.84,
+        "promo_active": true,
+        "timestamp": "2026-09-26T07:31:51.005Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:31:51.377Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/pos/transactions",
+      "timestamp": 1790407911369,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_8",
+        "quantity_sold": 2,
+        "unit_price": 3.36,
+        "promo_active": true,
+        "timestamp": "2026-09-26T07:31:50.594Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:31:50.863Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/pos/transactions",
+      "timestamp": 1790407910859,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_1",
+        "quantity_sold": 3,
+        "unit_price": 4.89,
+        "promo_active": true,
+        "timestamp": "2026-09-26T07:31:50.292Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:31:50.562Z"
+      },
+      "qos": 0
+    }
+  ]
+}

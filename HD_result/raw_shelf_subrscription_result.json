@@ -1,0 +1,146 @@
+{
+  "topicFilter": "local/store_1/raw/shelf",
+  "qos": 0,
+  "messages": [
+    {
+      "format": "json",
+      "topic": "local/store_1/raw/shelf",
+      "timestamp": 1790407761485,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_7",
+        "quantity": 67,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:21.199Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "local/store_1/raw/shelf",
+      "timestamp": 1790407761475,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_2",
+        "quantity": 47,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:21.199Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "local/store_1/raw/shelf",
+      "timestamp": 1790407761466,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_5",
+        "quantity": 71,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:21.199Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "local/store_1/raw/shelf",
+      "timestamp": 1790407761114,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_8",
+        "quantity": 83,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:20.816Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "local/store_1/raw/shelf",
+      "timestamp": 1790407761108,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_9",
+        "quantity": 20,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:20.786Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "local/store_1/raw/shelf",
+      "timestamp": 1790407760952,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_3",
+        "quantity": 22,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:20.646Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "local/store_1/raw/shelf",
+      "timestamp": 1790407760576,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_10",
+        "quantity": 63,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:20.288Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "local/store_1/raw/shelf",
+      "timestamp": 1790407760321,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_1",
+        "quantity": 119,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:19.975Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "local/store_1/raw/shelf",
+      "timestamp": 1790407759295,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_6",
+        "quantity": 68,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:18.760Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "local/store_1/raw/shelf",
+      "timestamp": 1790407758534,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_4",
+        "quantity": 1,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:18.166Z"
+      },
+      "qos": 0
+    }
+  ]
+}

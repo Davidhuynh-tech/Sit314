@@ -1,5 +1,11 @@
 const fs = require("fs");
+const { createEdgeFilter } = require("../../shared/edgeFilter");
 require("dotenv").config(); // loads AWS_IOT_ENDPOINT etc. from a .env file in the project root, if present
+
+const edgeFilter = createEdgeFilter({
+  deadband: Number(process.env.EDGE_DEADBAND ?? 5),
+  reorderThreshold: Number(process.env.REORDER_THRESHOLD ?? 15),
+});
 
 const DEMO_MODE = process.argv.includes("--demo") || process.argv.includes("--dry-run");
 const MQTT_BROKER_URL = process.env.MQTT_BROKER_URL || "mqtt://localhost:1883";
@@ -70,6 +76,7 @@ function runDemo() {
         console.warn(`[controller:${STORE_ID}] Rejected malformed shelf reading`);
         return;
       }
+      if (!edgeFilter.shouldRelayShelf(reading)) return;
       const { cloudTopic, payload } = relay("shelf", reading);
       console.log(`[${cloudTopic}]`, JSON.stringify(payload));
     }, 3000 + Math.random() * 500);
@@ -111,6 +118,7 @@ function runMqttRelay() {
 
     if (topic.endsWith("/raw/shelf")) {
       if (!validateShelfReading(payload)) return console.warn(`[controller:${STORE_ID}] Rejected malformed shelf reading`);
+      if (!edgeFilter.shouldRelayShelf(payload)) return;
       const { cloudTopic, payload: out } = relay("shelf", payload);
       client.publish(cloudTopic, JSON.stringify(out));
     } else if (topic.endsWith("/raw/pos")) {

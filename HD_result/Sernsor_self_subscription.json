@@ -1,0 +1,166 @@
+{
+  "topicFilter": "stores/store_1/sensors/shelf",
+  "qos": 0,
+  "messages": [
+    {
+      "format": "json",
+      "topic": "stores/store_1/sensors/shelf",
+      "timestamp": 1790407803724,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_2",
+        "quantity": 72,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:30:02.975Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:30:03.412Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/sensors/shelf",
+      "timestamp": 1790407802957,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_9",
+        "quantity": 0,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:30:02.166Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:30:02.640Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/sensors/shelf",
+      "timestamp": 1790407802386,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_4",
+        "quantity": 43,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:30:01.683Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:30:02.125Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/sensors/shelf",
+      "timestamp": 1790407801341,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_8",
+        "quantity": 97,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:30:00.563Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:30:01.075Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/sensors/shelf",
+      "timestamp": 1790407800338,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_5",
+        "quantity": 118,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:59.591Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:30:00.070Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/sensors/shelf",
+      "timestamp": 1790407798250,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_10",
+        "quantity": 58,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:57.445Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:29:57.734Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/sensors/shelf",
+      "timestamp": 1790407797740,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_6",
+        "quantity": 115,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:57.057Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:29:57.474Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/sensors/shelf",
+      "timestamp": 1790407797254,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_1",
+        "quantity": 159,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:56.668Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:29:56.990Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/sensors/shelf",
+      "timestamp": 1790407795459,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_8",
+        "quantity": 107,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:54.453Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:29:54.916Z"
+      },
+      "qos": 0
+    },
+    {
+      "format": "json",
+      "topic": "stores/store_1/sensors/shelf",
+      "timestamp": 1790407794658,
+      "payload": {
+        "store_id": "store_1",
+        "sku_id": "sku_3",
+        "quantity": 84,
+        "unit": "each",
+        "reading_type": "shelf_weight",
+        "timestamp": "2026-09-26T07:29:54.125Z",
+        "relayed_by": "controller-store_1",
+        "relayed_at": "2026-09-26T07:29:54.399Z"
+      },
+      "qos": 0
+    }
+  ]
+}
