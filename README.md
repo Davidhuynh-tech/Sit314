@@ -1,7 +1,7 @@
-# SIT314 Distinction Project — Demand Forecasting & Auto-Replenishment
+# SIT314 Distinction Project  Demand Forecasting & Auto-Replenishment
 
-Student: Gia Kiet Huynh (David) — 223482424
-Unit: SIT314 — Cloud Enabling Technologies
+Student: Gia Kiet Huynh (David)  223482424
+Unit: SIT314  Cloud Enabling Technologies
 
 An automatic stock management and delivery system for supermarkets, focused on the
 **demand forecasting and auto-replenishment** module. Full architecture, scalability
@@ -12,7 +12,7 @@ approach and breaking-point analysis are documented in `docs/distinction_plan.pd
 
 - [x] Requirements, architecture, and scalability/breaking-point analysis (Task 1)
 - [x] Development environment set up (AWS account, IAM, Node.js, Node-RED, this repo)
-- [x] Device simulation layer (Node.js) — micro-sensor, controller, card-reader — see `devices/`
+- [x] Device simulation layer (Node.js)  micro-sensor, controller, card-reader  see `devices/`
 - [x] Node-RED flow: MQTT ingestion, normalisation, noise filtering, threshold-based
       low-stock alerting, partitioned by store, then HTTP handoff to the event buffer
 - [x] Forecasting, Replenishment Decision, and Order Dispatch microservices
@@ -31,7 +31,7 @@ npm run pipeline:serve   # http://127.0.0.1:1881  (Node-RED posts here)
 ## Simulated device architecture
 
 Rather than one flat "simulator" script, the device layer mirrors a real in-store IoT
-deployment: physical devices don't talk to the cloud directly — they talk to a local
+deployment: physical devices don't talk to the cloud directly  they talk to a local
 store controller (edge gateway), which validates and relays their data upward.
 
 ```
@@ -43,18 +43,18 @@ store controller (edge gateway), which validates and relays their data upward.
                                                            Node-RED flow (cloud-facing)
 ```
 
-- **`devices/micro-sensor/sensor.js`** — simulates a shelf-weight/RFID sensor. Publishes
-  raw readings to a *local* topic (`local/{store_id}/raw/shelf`) — it never talks to the
+- **`devices/micro-sensor/sensor.js`**  simulates a shelf-weight/RFID sensor. Publishes
+  raw readings to a *local* topic (`local/{store_id}/raw/shelf`)  it never talks to the
   cloud directly, matching how a real embedded sensor would behave.
-- **`devices/card-reader/card_reader.js`** — simulates a POS terminal/card reader.
+- **`devices/card-reader/card_reader.js`**  simulates a POS terminal/card reader.
   Publishes raw swipe events to `local/{store_id}/raw/pos`.
-- **`devices/controller/controller.js`** — simulates the in-store gateway. Subscribes to
+- **`devices/controller/controller.js`**  simulates the in-store gateway. Subscribes to
   both local topics for its store, does light edge-side validation (drops malformed
   events before they reach the cloud), and relays valid events to the cloud-facing
-  topics — `stores/{store_id}/sensors/shelf` and `stores/{store_id}/pos/transactions` —
+  topics  `stores/{store_id}/sensors/shelf` and `stores/{store_id}/pos/transactions` 
   which is exactly what the Node-RED flow already subscribes to, so no flow changes
   were needed when this was introduced.
-- **`shared/`** — reading/transaction generator logic shared between the micro-sensor,
+- **`shared/`**  reading/transaction generator logic shared between the micro-sensor,
   card-reader, and the controller's self-contained demo mode.
 
 ## Repository structure
@@ -90,7 +90,7 @@ MQTT_BROKER_URL=mqtt://localhost:1883 STORE_ID=store_1 npm run device:controller
 MQTT_BROKER_URL=mqtt://localhost:1883 npm run device:sensor
 MQTT_BROKER_URL=mqtt://localhost:1883 npm run device:card-reader
 
-# AWS IoT Core — copy .env.example to .env, set AWS_IOT_ENDPOINT, then:
+# AWS IoT Core  copy .env.example to .env, set AWS_IOT_ENDPOINT, then:
 npm run device:controller
 npm run device:sensor
 npm run device:card-reader
