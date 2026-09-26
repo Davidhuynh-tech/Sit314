@@ -8,9 +8,17 @@
 
 const { createOrder } = require("./lib/dispatch");
 const { notifyStoreStaff } = require("./lib/notify");
-const { createInMemoryStore } = require("./lib/store");
+const { createInMemoryStore, createFileStore, createDynamoDbStore } = require("./lib/store");
+const { writeOrderToAurora } = require("../../shared/awsPublish");
 
-const store = createInMemoryStore();
+function createStore() {
+  const backend = (process.env.STORAGE_BACKEND || "memory").toLowerCase();
+  if (backend === "dynamodb") return createDynamoDbStore();
+  if (backend === "file") return createFileStore();
+  return createInMemoryStore();
+}
+
+const store = createStore();
 
 exports.handler = async (event) => {
   const records = event.Records || [event];
@@ -32,7 +40,8 @@ exports.handler = async (event) => {
 
     const order = createOrder(orderRequest);
     await store.saveOrder(order);
-    const notification = notifyStoreStaff(order);
+    await writeOrderToAurora(order);
+    const notification = await notifyStoreStaff(order);
 
     createdOrders.push({ order, notification });
   }

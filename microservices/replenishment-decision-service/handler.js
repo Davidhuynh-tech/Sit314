@@ -9,14 +9,22 @@
  */
 
 const { decideReplenishment } = require("./lib/decision");
-const { createInMemoryStore } = require("./lib/store");
+const { createInMemoryStore, createFileStore, createDynamoDbStore } = require("./lib/store");
+const { sendSqs } = require("../../shared/awsPublish");
 
-// Demo seed data so the local test harness has something realistic to
-// react to. In real deployment this comes from DynamoDB (see lib/store.js).
-const store = createInMemoryStore({
+const DEMO_STOCK = {
   "store_1#sku_1": { currentStock: 40, reorderThreshold: 15, supplierLeadTimeDays: 3 },
   "store_2#sku_4": { currentStock: 10, reorderThreshold: 15, supplierLeadTimeDays: 2 },
-});
+};
+
+function createStore() {
+  const backend = (process.env.STORAGE_BACKEND || "memory").toLowerCase();
+  if (backend === "dynamodb") return createDynamoDbStore();
+  if (backend === "file") return createFileStore(DEMO_STOCK);
+  return createInMemoryStore(DEMO_STOCK);
+}
+
+const store = createStore();
 
 /**
  * @param {Object} event - forecast result(s), e.g. { Records: [{ body: '{"store_id":...,"sku_id":...,"forecastQuantity":...}' }] }
@@ -26,7 +34,9 @@ const store = createInMemoryStore({
 exports.handler = async (event, publishOrderRequest) => {
   const records = event.Records || [event];
   const orderRequests = [];
-  const publish = publishOrderRequest || ((req) => orderRequests.push(req));
+  const publish = typeof publishOrderRequest === "function"
+    ? publishOrderRequest
+    : (req) => orderRequests.push(req);
 
   for (const record of records) {
     let forecast;
@@ -61,6 +71,9 @@ exports.handler = async (event, publishOrderRequest) => {
         requestedAt: new Date().toISOString(),
       };
       publish(orderRequest);
+      if (typeof publishOrderRequest !== "function") {
+        await sendSqs(process.env.ORDER_QUEUE_URL, orderRequest);
+      }
     }
   }
 

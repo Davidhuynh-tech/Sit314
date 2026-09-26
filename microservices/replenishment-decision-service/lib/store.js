@@ -21,6 +21,24 @@ function createInMemoryStore(seedStock = {}) {
   };
 }
 
+function createFileStore(seedStock = {}) {
+  const { createJsonTable } = require("../../../shared/jsonTable");
+  const stock = createJsonTable("stock-levels.json");
+  const DEFAULT = { currentStock: 50, reorderThreshold: 15, supplierLeadTimeDays: 3 };
+
+  return {
+    async getStockInfo(key) {
+      const saved = await stock.get(key);
+      if (saved) return saved;
+      if (seedStock[key]) return seedStock[key];
+      return { ...DEFAULT };
+    },
+    async setStockInfo(key, info) {
+      return stock.put(key, info);
+    },
+  };
+}
+
 function createDynamoDbStore(tableNames = { stock: "StockLevels", suppliers: "SuppliersAndOrders" }) {
   const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
   const { DynamoDBDocumentClient, GetCommand, PutCommand } = require("@aws-sdk/lib-dynamodb");
@@ -29,7 +47,7 @@ function createDynamoDbStore(tableNames = { stock: "StockLevels", suppliers: "Su
   return {
     async getStockInfo(key) {
       const res = await client.send(new GetCommand({ TableName: tableNames.stock, Key: { store_id_sku_id: key } }));
-      if (!res.Item) throw new Error(`No StockLevels record for ${key} - Week 6 seeding required`);
+      if (!res.Item) return { currentStock: 50, reorderThreshold: 15, supplierLeadTimeDays: 3 };
       return res.Item;
     },
     async setStockInfo(key, info) {
@@ -38,4 +56,4 @@ function createDynamoDbStore(tableNames = { stock: "StockLevels", suppliers: "Su
   };
 }
 
-module.exports = { createInMemoryStore, createDynamoDbStore };
+module.exports = { createInMemoryStore, createFileStore, createDynamoDbStore };

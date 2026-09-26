@@ -27,9 +27,37 @@ function createInMemoryStore() {
   };
 }
 
+function createFileStore() {
+  const { createJsonTable } = require("../../../shared/jsonTable");
+  const sales = createJsonTable("sales-events.json");
+  const forecasts = createJsonTable("forecast-results.json");
+  const ROLLING_WINDOW = 30;
+
+  return {
+    async appendSale(key, quantity) {
+      return sales.update(key, (arr) => {
+        const next = Array.isArray(arr) ? arr.slice() : [];
+        next.push(quantity);
+        if (next.length > ROLLING_WINDOW) next.shift();
+        return next;
+      });
+    },
+    async getHistory(key) {
+      const history = await sales.get(key);
+      return Array.isArray(history) ? history : [];
+    },
+    async saveForecast(key, forecast) {
+      return forecasts.put(key, { ...forecast, updated_at: new Date().toISOString() });
+    },
+    async getForecast(key) {
+      return forecasts.get(key);
+    },
+  };
+}
+
 function createDynamoDbStore(tableNames = { history: "SalesEvents", forecast: "ForecastResults" }) {
   const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-  const { DynamoDBDocumentClient, QueryCommand, PutCommand } = require("@aws-sdk/lib-dynamodb");
+  const { DynamoDBDocumentClient, QueryCommand, PutCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
   const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
   return {
@@ -37,7 +65,7 @@ function createDynamoDbStore(tableNames = { history: "SalesEvents", forecast: "F
       const [store_id, sku_id] = key.split("#");
       return client.send(new PutCommand({
         TableName: tableNames.history,
-        Item: { store_id_sku_id: key, timestamp: new Date().toISOString(), store_id, sku_id, quantity },
+        Item: { store_id_sku_id: key, timestamp: `${new Date().toISOString()}#${Math.random().toString(16).slice(2)}`, store_id, sku_id, quantity },
       }));
     },
     async getHistory(key) {
@@ -57,9 +85,13 @@ function createDynamoDbStore(tableNames = { history: "SalesEvents", forecast: "F
       }));
     },
     async getForecast(key) {
-      throw new Error("getForecast via DynamoDB not yet implemented - Week 6 task");
+      const res = await client.send(new GetCommand({
+        TableName: tableNames.forecast,
+        Key: { store_id_sku_id: key },
+      }));
+      return res.Item || null;
     },
   };
 }
 
-module.exports = { createInMemoryStore, createDynamoDbStore };
+module.exports = { createInMemoryStore, createFileStore, createDynamoDbStore };

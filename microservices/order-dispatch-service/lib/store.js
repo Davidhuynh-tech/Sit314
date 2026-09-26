@@ -19,6 +19,22 @@ function createInMemoryStore() {
   };
 }
 
+function createFileStore() {
+  const { createJsonTable } = require("../../../shared/jsonTable");
+  const orders = createJsonTable("orders.json");
+  return {
+    async saveOrder(order) {
+      return orders.put(order.orderId, order);
+    },
+    async getOrder(orderId) {
+      return orders.get(orderId);
+    },
+    async listOrders() {
+      return orders.values();
+    },
+  };
+}
+
 function createDynamoDbStore(tableName = "SuppliersAndOrders") {
   const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
   const { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand } = require("@aws-sdk/lib-dynamodb");
@@ -39,4 +55,4 @@ function createDynamoDbStore(tableName = "SuppliersAndOrders") {
   };
 }
 
-module.exports = { createInMemoryStore, createDynamoDbStore };
+module.exports = { createInMemoryStore, createFileStore, createDynamoDbStore };

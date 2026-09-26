@@ -27,6 +27,7 @@ function buildConnectOptions() {
       cert: fs.readFileSync(AWS_IOT_CERT_PATH),
       key: fs.readFileSync(AWS_IOT_KEY_PATH),
       ca: fs.readFileSync(AWS_IOT_CA_PATH),
+      family: 4,
       clientId: `controller-${STORE_ID}-${Date.now()}`, // must be unique per connection - AWS IoT disconnects duplicates
       protocol: "mqtts",
       connectTimeout: 8000,

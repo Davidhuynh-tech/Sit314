@@ -1,0 +1,274 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Demand forecasting pipeline — SQS, DLQs, DynamoDB, and three Lambda functions.
+
+Parameters:
+  LabRoleArn:
+    Type: String
+    Description: Learner Lab role ARN. Leave blank to create a least-privilege role (personal accounts only).
+    Default: ""
+
+Conditions:
+  CreatePipelineRole: !Equals [!Ref LabRoleArn, ""]
+
+Resources:
+  SalesEventsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: sales-events
+      VisibilityTimeout: 60
+      SqsManagedSseEnabled: true
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt SalesEventsDlq.Arn
+        maxReceiveCount: 3
+
+  SalesEventsDlq:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: sales-events-dlq
+      SqsManagedSseEnabled: true
+
+  ForecastReadyQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: forecast-ready
+      VisibilityTimeout: 60
+      SqsManagedSseEnabled: true
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt ForecastReadyDlq.Arn
+        maxReceiveCount: 3
+
+  ForecastReadyDlq:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: forecast-ready-dlq
+      SqsManagedSseEnabled: true
+
+  ReplenishmentApprovedQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: replenishment-approved
+      VisibilityTimeout: 60
+      SqsManagedSseEnabled: true
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt ReplenishmentApprovedDlq.Arn
+        maxReceiveCount: 3
+
+  ReplenishmentApprovedDlq:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: replenishment-approved-dlq
+      SqsManagedSseEnabled: true
+
+  SalesEventsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: SalesEvents
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: store_id_sku_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: store_id_sku_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      SSESpecification:
+        SSEEnabled: true
+
+  ForecastResultsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ForecastResults
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: store_id_sku_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: store_id_sku_id
+          KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
+
+  StockLevelsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: StockLevels
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: store_id_sku_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: store_id_sku_id
+          KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
+
+  OrdersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: SuppliersAndOrders
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: orderId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: orderId
+          KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
+
+  PipelineRole:
+    Type: AWS::IAM::Role
+    Condition: CreatePipelineRole
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: pipeline-least-privilege
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                  - sqs:SendMessage
+                Resource:
+                  - !GetAtt SalesEventsQueue.Arn
+                  - !GetAtt ForecastReadyQueue.Arn
+                  - !GetAtt ReplenishmentApprovedQueue.Arn
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:Query
+                Resource:
+                  - !GetAtt SalesEventsTable.Arn
+                  - !GetAtt ForecastResultsTable.Arn
+                  - !GetAtt StockLevelsTable.Arn
+                  - !GetAtt OrdersTable.Arn
+
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: !Sub "${ArchiveBucket.Arn}/*"
+              - Effect: Allow
+                Action: sns:Publish
+                Resource: !Ref AlarmTopic
+              - Effect: Allow
+                Action:
+                  - rds-data:ExecuteStatement
+                  - secretsmanager:GetSecretValue
+                Resource: "*"
+
+  ArchiveBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  AlarmTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: sit314-pipeline-alarms
+
+  SalesQueueDepthAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: sales-events-depth
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: sales-events
+      Statistic: Maximum
+      Period: 60
+      EvaluationPeriods: 2
+      Threshold: 500
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlarmTopic
+
+  ForecastAgeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: forecast-ready-age
+      Namespace: AWS/SQS
+      MetricName: ApproximateAgeOfOldestMessage
+      Dimensions:
+        - Name: QueueName
+          Value: forecast-ready
+      Statistic: Maximum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 60
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlarmTopic
+
+  LambdaThrottleAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: forecasting-throttles
+      Namespace: AWS/Lambda
+      MetricName: Throttles
+      Dimensions:
+        - Name: FunctionName
+          Value: sit314-forecasting
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlarmTopic
+
+  DynamoThrottleAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: sales-events-throttled
+      Namespace: AWS/DynamoDB
+      MetricName: ThrottledRequests
+      Dimensions:
+        - Name: TableName
+          Value: SalesEvents
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 2
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlarmTopic
+
+Outputs:
+  SalesEventsQueueUrl:
+    Value: !Ref SalesEventsQueue
+  ForecastReadyQueueUrl:
+    Value: !Ref ForecastReadyQueue
+  ReplenishmentApprovedQueueUrl:
+    Value: !Ref ReplenishmentApprovedQueue
+  RoleArn:
+    Condition: CreatePipelineRole
+    Value: !GetAtt PipelineRole.Arn

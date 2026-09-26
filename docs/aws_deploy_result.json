@@ -1,0 +1,28 @@
+{
+  "account": "665385915882",
+  "region": "us-east-1",
+  "queues": {
+    "salesUrl": "https://sqs.us-east-1.amazonaws.com/665385915882/sales-events",
+    "forecastUrl": "https://sqs.us-east-1.amazonaws.com/665385915882/forecast-ready",
+    "orderUrl": "https://sqs.us-east-1.amazonaws.com/665385915882/replenishment-approved"
+  },
+  "bucket": "sit314-forecast-archive-665385915882",
+  "topicArn": "arn:aws:sns:us-east-1:665385915882:sit314-pipeline-alarms",
+  "roleArn": "arn:aws:iam::665385915882:role/LabRole",
+  "functions": [
+    "sit314-forecasting",
+    "sit314-replenishment-decision",
+    "sit314-order-dispatch"
+  ],
+  "tables": [
+    "SalesEvents",
+    "ForecastResults",
+    "StockLevels",
+    "SuppliersAndOrders"
+  ],
+  "aurora": {
+    "status": "failed",
+    "message": "User: arn:aws:sts::665385915882:assumed-role/voclabs/user5427966=s223482424@deakin.edu.au is not authorized to perform: rds:CreateDBInstance on resource: arn:aws:rds:us-east-1:665385915882:db:sit314-replenishment-1 with an explicit deny in an identity-based policy: arn:aws:iam::665385915882:policy/Pvoclabs2"
+  },
+  "deployedAt": "2026-09-25T14:01:21.072Z"
+}

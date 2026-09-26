@@ -7,13 +7,29 @@
     "info": "Week 3 deliverable: MQTT ingestion, normalisation, noise filtering and threshold-based low-stock alerting, partitioned by store_id per the Task 1 breaking-point analysis (Section 2.3 - single Node-RED instance bottleneck)."
   },
   {
+    "id": "tls-aws-iot",
+    "type": "tls-config",
+    "name": "AWS IoT device cert",
+    "cert": "C:/Users/giaki/School/Sit_314/sit314-demand-forecasting/959bb785b945f64da38b860a30fd85b61821b4961ad06c3d79abb308b872075a-certificate.pem.crt",
+    "key": "C:/Users/giaki/School/Sit_314/sit314-demand-forecasting/959bb785b945f64da38b860a30fd85b61821b4961ad06c3d79abb308b872075a-private.pem.key",
+    "ca": "C:/Users/giaki/School/Sit_314/sit314-demand-forecasting/AmazonRootCA1.pem",
+    "certname": "device-certificate.pem.crt",
+    "keyname": "device-private.pem.key",
+    "caname": "AmazonRootCA1.pem",
+    "servername": "a3hhtjjy4kengq-ats.iot.us-east-1.amazonaws.com",
+    "verifyservercert": true,
+    "alpnprotocol": ""
+  },
+  {
     "id": "mqtt-broker-local",
     "type": "mqtt-broker",
     "name": "Local / AWS IoT Core (dev)",
-    "broker": "localhost",
-    "port": "1883",
-    "clientid": "",
-    "usetls": false,
+    "broker": "a3hhtjjy4kengq-ats.iot.us-east-1.amazonaws.com",
+    "port": "8883",
+    "tls": "tls-aws-iot",
+    "clientid": "sit314-node-red",
+    "autoConnect": true,
+    "usetls": true,
     "protocolVersion": "4",
     "keepalive": "60",
     "cleansession": true
@@ -53,7 +69,7 @@
     "outputs": 1,
     "x": 420,
     "y": 100,
-    "wires": [["fn-threshold-check"]]
+    "wires": [["fn-threshold-check", "http-post-shelf"]]
   },
   {
     "id": "fn-normalise-pos",
@@ -64,7 +80,7 @@
     "outputs": 1,
     "x": 420,
     "y": 220,
-    "wires": [["debug-pos-out"]]
+    "wires": [["debug-pos-out", "http-post-pos"]]
   },
   {
     "id": "fn-threshold-check",
@@ -134,6 +150,88 @@
     "complete": "payload",
     "x": 700,
     "y": 220,
+    "wires": []
+  },
+  {
+    "id": "http-post-pos",
+    "type": "http request",
+    "z": "tab-demand-forecasting",
+    "name": "Enqueue sales-events",
+    "method": "POST",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "url": "http://127.0.0.1:1881/ingest/pos",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "senderr": false,
+    "headers": [
+      {
+        "keyType": "other",
+        "keyValue": "Content-Type",
+        "valueType": "other",
+        "valueValue": "application/json"
+      }
+    ],
+    "x": 710,
+    "y": 300,
+    "wires": [["debug-pos-enqueued"]]
+  },
+  {
+    "id": "http-post-shelf",
+    "type": "http request",
+    "z": "tab-demand-forecasting",
+    "name": "Update StockLevels",
+    "method": "POST",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "url": "http://127.0.0.1:1881/ingest/shelf",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "senderr": false,
+    "headers": [
+      {
+        "keyType": "other",
+        "keyValue": "Content-Type",
+        "valueType": "other",
+        "valueValue": "application/json"
+      }
+    ],
+    "x": 700,
+    "y": 160,
+    "wires": [["debug-shelf-enqueued"]]
+  },
+  {
+    "id": "debug-pos-enqueued",
+    "type": "debug",
+    "z": "tab-demand-forecasting",
+    "name": "POS accepted by queue",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 980,
+    "y": 300,
+    "wires": []
+  },
+  {
+    "id": "debug-shelf-enqueued",
+    "type": "debug",
+    "z": "tab-demand-forecasting",
+    "name": "Shelf stock updated",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 960,
+    "y": 160,
     "wires": []
   }
 ]

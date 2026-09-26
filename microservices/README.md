@@ -52,13 +52,18 @@ node microservices/order-dispatch-service/test/run-local.js
 node microservices/run-pipeline-demo.js
 ```
 
-## Wiring to the rest of the system (upcoming work)
+## Event-driven wiring
 
-- **Week 5:** replace the debug nodes in `node-red-flows/flows.json` with a real
-  connection to an SQS queue that the Forecasting service consumes from; connect
-  Forecasting → Replenishment Decision → Order Dispatch via SQS/EventBridge instead
-  of the direct in-process calls used in `run-pipeline-demo.js`.
-- **Week 6:** swap each service's storage adapter from `createInMemoryStore()` to
-  `createDynamoDbStore()`, deploy each `handler.js` as a Lambda function.
-- **Week 7:** see `docs/auto_scaling_plan.md` for the concurrency/capacity policies to
-  apply and load-test once these are deployed.
+`event-pipeline.js` replaces the direct calls in `run-pipeline-demo.js` with three
+queues (`sales-events`, `forecast-ready`, `replenishment-approved`). Each queue has a
+dead-letter path after 3 failed receives. `ingest-server.js` is what Node-RED posts to.
+
+```bash
+node microservices/test/run-queue-pipeline.js
+node microservices/test/run-file-store.js
+npm run pipeline:serve
+```
+
+Set `STORAGE_BACKEND=memory` (default), `file`, or `dynamodb`. The DynamoDB tables,
+SQS queues, DLQs, and least-privilege role are in `infra/template.yaml`. AWS IoT
+device connections stay on mutual TLS (`shared/mqttClient.js`).

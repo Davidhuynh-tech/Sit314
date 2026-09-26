@@ -1,10 +1,15 @@
 const { computeForecast } = require("./lib/forecast");
-const { createInMemoryStore } = require("./lib/store");
+const { createInMemoryStore, createFileStore, createDynamoDbStore } = require("./lib/store");
+const { sendSqs, archiveSale } = require("../../shared/awsPublish");
 
-// Local/demo store instance. In real Lambda deployment, swap this for
-// createDynamoDbStore() from ./lib/store - the handler logic below does
-// not need to change either way.
-const store = createInMemoryStore();
+function createStore() {
+  const backend = (process.env.STORAGE_BACKEND || "memory").toLowerCase();
+  if (backend === "dynamodb") return createDynamoDbStore();
+  if (backend === "file") return createFileStore();
+  return createInMemoryStore();
+}
+
+const store = createStore();
 
 exports.handler = async (event) => {
   const records = event.Records || [event]; // allow direct invocation with a single payload too
@@ -31,8 +36,26 @@ exports.handler = async (event) => {
     const history = await store.getHistory(key);
     const forecast = computeForecast(history);
     await store.saveForecast(key, forecast);
+    await archiveSale({
+      store_id: payload.store_id,
+      sku_id: payload.sku_id,
+      quantity,
+      timestamp: new Date().toISOString(),
+    });
 
     results.push({ store_id: payload.store_id, sku_id: payload.sku_id, ...forecast });
+  }
+
+  const latest = new Map();
+  for (const row of results) latest.set(`${row.store_id}#${row.sku_id}`, row);
+  for (const row of latest.values()) {
+    await sendSqs(process.env.FORECAST_QUEUE_URL, {
+      store_id: row.store_id,
+      sku_id: row.sku_id,
+      forecastQuantity: row.forecastQuantity,
+      confidence: row.confidence,
+      sampleSize: row.sampleSize,
+    });
   }
 
   return { processed: results.length, results };

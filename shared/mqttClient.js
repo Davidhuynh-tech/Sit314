@@ -75,6 +75,7 @@ function connectMqtt(clientId, extraOptions = {}) {
       ...extraOptions,
       host,
       port: 8883,
+      family: 4,
       protocol: "mqtts",
       protocolVersion: 4,
       clientId,

@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-09-25T12:30:37.979Z",
+  "note": "Local burst against the in-process SQS stand-in. CloudWatch alarms and reserved concurrency are defined in infra/template.yaml and docs/auto_scaling_plan.md.",
+  "runs": [
+    {
+      "stores": 5,
+      "skus": 10,
+      "events": 300,
+      "directForecastMs": 2,
+      "queueAcceptMs": 1,
+      "pipelineDrainMs": 14,
+      "peakSalesQueue": 300,
+      "forecasts": 50,
+      "orders": 50,
+      "dlq": 0
+    },
+    {
+      "stores": 20,
+      "skus": 10,
+      "events": 1200,
+      "directForecastMs": 7,
+      "queueAcceptMs": 6,
+      "pipelineDrainMs": 34,
+      "peakSalesQueue": 1200,
+      "forecasts": 200,
+      "orders": 200,
+      "dlq": 0
+    },
+    {
+      "stores": 50,
+      "skus": 10,
+      "events": 3000,
+      "directForecastMs": 24,
+      "queueAcceptMs": 23,
+      "pipelineDrainMs": 122,
+      "peakSalesQueue": 3000,
+      "forecasts": 500,
+      "orders": 500,
+      "dlq": 0
+    }
+  ],
+  "pipelineDrainMs": {
+    "p50": 34,
+    "max": 122
+  }
+}

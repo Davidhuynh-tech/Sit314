@@ -8,22 +8,25 @@ An automatic stock management and delivery system for supermarkets, focused on t
 approach and breaking-point analysis are documented in `docs/distinction_plan.pdf`
 (Task 1, signed off).
 
-## Current status (~Week 5 of 9 — see docs/project_status.pdf for the full update)
+## Current status (final submission — see project_report.pdf)
 
 - [x] Requirements, architecture, and scalability/breaking-point analysis (Task 1)
 - [x] Development environment set up (AWS account, IAM, Node.js, Node-RED, this repo)
 - [x] Device simulation layer (Node.js) — micro-sensor, controller, card-reader — see `devices/`
 - [x] Node-RED flow: MQTT ingestion, normalisation, noise filtering, threshold-based
-      low-stock alerting, partitioned by store — see `node-red-flows/flows.json`
-- [x] Forecasting, Replenishment Decision, and Order Dispatch microservices — built,
-      tested individually and end-to-end — see `microservices/`
-- [x] Auto-scaling plan — concrete policies/thresholds extending the Task 1
-      breaking-point analysis — see `docs/auto_scaling_plan.md`
-- [ ] Wire microservices to SQS/EventBridge in place of direct calls (Week 5 remainder)
-- [ ] Initial AWS deployment — swap in-memory storage for DynamoDB (Week 6 — not started)
-- [ ] Scalability/load testing against the auto-scaling plan (Week 7 — not started)
-- [ ] Secure deployment (Week 8 — not started)
-- [ ] Final testing & submission (Week 9 — not started)
+      low-stock alerting, partitioned by store, then HTTP handoff to the event buffer
+- [x] Forecasting, Replenishment Decision, and Order Dispatch microservices
+- [x] Event-driven wiring: `sales-events` → `forecast-ready` → `replenishment-approved`, with DLQs
+- [x] Storage adapters: in-memory, file-backed (local stand-in), and DynamoDB
+- [x] Auto-scaling plan and CloudFormation (`docs/auto_scaling_plan.md`, `infra/template.yaml`)
+- [x] Local scalability burst (5 / 20 / 50 stores) — `docs/load_test_results.json`
+- [x] Secure deployment controls: TLS to AWS IoT, encrypted queues/tables, least-privilege IAM, input validation
+
+```bash
+npm test          # service tests, direct pipeline, queue pipeline, file store
+npm run test:load # 5, 20 and 50 store burst
+npm run pipeline:serve   # http://127.0.0.1:1881  (Node-RED posts here)
+```
 
 ## Simulated device architecture
 
@@ -109,6 +112,6 @@ node-red
 ```
 
 The flow subscribes to the same `stores/+/sensors/shelf` and `stores/+/pos/transactions`
-topics that the controller relays to, and currently uses debug nodes as placeholder
-outputs where the Kinesis/SQS event buffer and downstream microservices will connect
-from Week 5 onward.
+topics that the controller relays to. Normalised POS events are posted to
+`http://127.0.0.1:1881/ingest/pos` and shelf readings to `/ingest/shelf`. Start that
+buffer with `npm run pipeline:serve` before the flow is deployed.
